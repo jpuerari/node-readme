@@ -1,3 +1,4 @@
+//Global Variables:
 var inquirer = require("inquirer");
 var axios = require("axios");
 var fs = require("fs");
@@ -5,7 +6,7 @@ var generateMarkdown = require("./generateMarkdown.js")
 var email;
 var pic;
 var username;
-//prompt user
+//Github User Prompt:
 inquirer
   .prompt([
     {
@@ -13,10 +14,10 @@ inquirer
       message: "What is your Github user name?",
       name: "username"
     }
+  //Github API
   ]).then(function(answers){
     console.log(answers)
     return axios.get("https://api.github.com/users/" + answers.username)
-    //axios.get(`https://api.github.com/users/${username}`)
   }).then(function(res) {
     console.log(res.data);
     username = res.data.login;
@@ -50,20 +51,15 @@ inquirer
       },
     ])
   }).then(function(moreAnswers){
-      //have all answers
-      //call fs.writefile here maybe?
-      // console.log(email, pic)
-      //moreAnswers.projectName = "something new"
       moreAnswers.email = email;
       moreAnswers.avatar_url = pic;
       moreAnswers.username = username;
       console.log(moreAnswers)
-      
+    //Export code to readme.md
       fs.writeFile("./readme.md", generateMarkdown(moreAnswers), function(err) {
         if (err) {
           return console.log(err);
         }
-      //variables? global
       })
   }).catch(function(err){
     if (err) throw err;
