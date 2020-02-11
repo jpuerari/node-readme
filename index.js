@@ -1,7 +1,10 @@
 var inquirer = require("inquirer");
 var axios = require("axios");
 var fs = require("fs");
-
+var generateMarkdown = require("./generateMarkdown.js")
+var email;
+var pic;
+var username;
 //prompt user
 inquirer
   .prompt([
@@ -12,15 +15,13 @@ inquirer
     }
   ]).then(function(answers){
     console.log(answers)
-
     return axios.get("https://api.github.com/users/" + answers.username)
-    
     //axios.get(`https://api.github.com/users/${username}`)
   }).then(function(res) {
     console.log(res.data);
-    var email = res.data.email;
-    var pic = res.data.avatar_url;
-
+    username = res.data.login;
+    email = res.data.email;
+    pic = res.data.avatar_url;
     return inquirer.prompt([
       {
         type: "input",
@@ -34,25 +35,36 @@ inquirer
       },
       {
         type: "input",
-        message: "What is your description?",
-        name: "description"
+        message: "What is the usage?",
+        name: "usage"
+      },
+      {
+        type: "input",
+        message: "What are the installation steps?",
+        name: "installation"
+      },
+      {
+        type: "input",
+        message: "What licenses did you use?",
+        name: "license"
       },
     ])
   }).then(function(moreAnswers){
       //have all answers
       //call fs.writefile here maybe?
-      //activity 6
+      // console.log(email, pic)
+      //moreAnswers.projectName = "something new"
+      moreAnswers.email = email;
+      moreAnswers.avatar_url = pic;
+      moreAnswers.username = username;
+      console.log(moreAnswers)
+      
+      fs.writeFile("./readme.md", generateMarkdown(moreAnswers), function(err) {
+        if (err) {
+          return console.log(err);
+        }
       //variables? global
+      })
   }).catch(function(err){
     if (err) throw err;
-  })
-
-
-  function five(){
-    return 5;
-  }
-  
-  var number = five();
-  console.log(2 + five())
-  console.log(five())
-
+})
